@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/F:/WebProjects/EvilLib/config/module.config.twig.php</file>
+            <file>file:/F:/WebProjects/EvilLib/src/EvilLib/Entity/AbstractUserEntity.php</file>
+            <file>file:/F:/WebProjects/EvilLib/src/EvilLib/Crypt/EncryptorInterface.php</file>
+            <file>file:/F:/WebProjects/EvilLib/config/module.config.doctrine.php</file>
+            <file>file:/F:/WebProjects/EvilLib/src/EvilLib/Crypt/Hash.php</file>
+            <file>file:/F:/WebProjects/EvilLib/src/EvilLib/Entity/AbstractEntity.php</file>
+            <file>file:/F:/WebProjects/EvilLib/src/EvilLib/Entity/UserEntityInterface.php</file>
+            <file>file:/F:/WebProjects/EvilLib/config/module.config.encryption.php</file>
+            <file>file:/F:/WebProjects/EvilLib/config/module.config.service-manager.php</file>
+            <file>file:/F:/WebProjects/EvilLib/src/EvilLib/Crypt/HashInterface.php</file>
+            <file>file:/F:/WebProjects/EvilLib/config/module.config.php</file>
+            <file>file:/F:/WebProjects/EvilLib/config/module.config.console.php</file>
+            <file>file:/F:/WebProjects/EvilLib/src/EvilLib/Crypt/Encryptor.php</file>
+        </group>
+    </open-files>
+</project-private>
