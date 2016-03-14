@@ -6,11 +6,11 @@ return array(
     'abstract_factories' => array(
         '\Zend\Cache\Service\StorageCacheAbstractServiceFactory',
         '\Zend\Log\LoggerAbstractServiceFactory',
-        '\Application\Factory\RepositoryAbstractFactory',
+        '\EvilLib\Factory\RepositoryAbstractFactory',
     ),
     'factories' => array(
+        'Encryptor' => '\EvilLib\Factory\EncryptionServiceFactory',
         'translator' => '\Zend\Mvc\Service\TranslatorServiceFactory',
-        'Encryptor' => '\Application\Factory\EncryptionServiceFactory',
     ),
     'services' => array(
         'ZfcTwigViewStrategy' => '\ZfcTwig\View\RenderingStrategy',
