@@ -36,7 +36,7 @@ class AuthenticationServiceFactory implements \Zend\ServiceManager\FactoryInterf
 
     /**
      * @param \Zend\ServiceManager\ServiceLocatorInterface $oServiceLocator
-     * @return \EvilLib\Authentication\AuthenticationService
+     * @return \Zend\Authentication\AuthenticationService
      * @throws \LogicException
      */
     public function createService(\Zend\ServiceManager\ServiceLocatorInterface $oServiceLocator)
@@ -92,6 +92,6 @@ class AuthenticationServiceFactory implements \Zend\ServiceManager\FactoryInterf
         // Instanciate adapter
         $oAdapter = new \DoctrineModule\Authentication\Adapter\ObjectRepository($aAdapterConfig);
 
-        return new \EvilLib\Authentication\AuthenticationService(new \Zend\Authentication\AuthenticationService($oStorage, $oAdapter));
+        return new \Zend\Authentication\AuthenticationService($oStorage, $oAdapter);
     }
 }

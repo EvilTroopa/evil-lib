@@ -1,0 +1,11 @@
+{% extends 'layout/layout' %}
+
+{% block content %}
+    {% do authForm.prepare() %}
+    {{ form().openTag(authForm)|raw }}
+    {{ formRow(authForm.get('csrf')) }}
+    {{ formRow(authForm.get('userEmail')) }}
+    {{ formRow(authForm.get('userPassword')) }}
+    {{ formRow(authForm.get('buttonSubmit')) }}
+    {{ form().closeTag(authForm)|raw }}
+{% endblock content %}

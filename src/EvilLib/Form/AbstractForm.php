@@ -7,20 +7,15 @@ namespace EvilLib\Form;
  *
  * @author EvilTroopa
  */
-abstract class AbstractForm extends \Zend\Form\Form
+abstract class AbstractForm extends \Zend\Form\Form implements \Zend\InputFilter\InputFilterProviderInterface
 {
 
-    const TOKEN_KEY = 'token';
+    public function __construct($sName, array $aOptions)
+    {
+        parent::__construct($sName, $aOptions);
 
-    /**
-     * @var string
-     */
-    protected $token;
-
-    /**
-     * @var string
-     */
-    protected $previousToken;
+        $this->add(array('name' => 'csrf', 'type' => '\Zend\Form\Element\Csrf'));
+    }
 
     /**
      * @see \Zend\Form\Form::setOptions
@@ -29,12 +24,24 @@ abstract class AbstractForm extends \Zend\Form\Form
     public function setOptions($aOptions = array())
     {
         parent::setOptions($aOptions);
-        if (array_key_exists('csrf_token', $aOptions)) {
-            $this->setToken($aOptions['csrf_token']);
-        }
-        if (array_key_exists('csrf_previous_token', $aOptions)) {
-            $this->setPreviousToken($aOptions['csrf_previous_token']);
-        }
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getInputFilterSpecification()
+    {
+        return array(
+            'csrf' => array(
+                'name' => 'csrf',
+                'required' => true,
+                'validators' => array(
+                    array(
+                        'name' => '\Zend\Validator\Csrf',
+                    ),
+                )
+            )
+        );
     }
 }

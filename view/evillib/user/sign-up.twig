@@ -1,0 +1,13 @@
+{% extends 'layout/layout' %}
+
+{% block content %}
+    {% do authForm.prepare() %}
+    {{ form().openTag(signUpForm)|raw }}
+    {{ formRow(signUpForm.get('csrf')) }}
+    {{ formRow(signUpForm.get('userEmail')) }}
+    {{ formRow(signUpForm.get('userPassword')) }}
+    {{ formRow(signUpForm.get('userPasswordConfirm')) }}
+    {{ formRow(signUpForm.get('userName')) }}
+    {{ formRow(signUpForm.get('buttonSubmit')) }}
+    {{ form().closeTag(signUpForm)|raw }}
+{% endblock content %}

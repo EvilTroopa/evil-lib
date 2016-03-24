@@ -48,4 +48,38 @@ class UserService extends \EvilLib\Service\AbstractService
 
         return $oUserEntity->getUserPassword() === $this->getServiceLocator()->get('Encryptor')->hash($sPassword);
     }
+
+    /**
+     * @param string $sUserEmail
+     * @param string $sUserPassword
+     * @return boolean
+     * @throws \InvalidArgumentException
+     * @throws \LogicException
+     */
+    public function authenticate($sUserEmail, $sUserPassword)
+    {
+        if (!is_string($sUserEmail)) {
+            throw new \InvalidArgumentException('Argument $sUserEmail expects a string value, "' . gettype($sUserEmail) . '"');
+        }
+        if (!is_string($sUserPassword)) {
+            throw new \InvalidArgumentException('Argument $sUserPassword expects a string value, "' . gettype($sUserPassword) . '"');
+        }
+
+        $oAuthenticationService = $this->getServiceLocator()->get('AuthenticationService');
+        $oAuthenticationResult = $oAuthenticationService->getAdapter()->setIdentityValue($sUserEmail)->setCredentialValue($sUserPassword)->authenticate();
+
+        if ($oAuthenticationResult instanceof \Zend\Authentication\Result) {
+            return $oAuthenticationResult->getCode() === 1;
+        }
+        throw new \LogicException('$oAuthenticationResult expects an instance \Zend\Authentication\Result, "' . (is_object($oAuthenticationResult) ? get_class($oAuthenticationResult) : gettype($oAuthenticationResult)));
+    }
+
+    /**
+     * @return \EvilLib\Service\UserService
+     */
+    public function logOut()
+    {
+        $this->getServiceLocator()->get('AuthenticationService')->clearIdentity();
+        return $this;
+    }
 }
