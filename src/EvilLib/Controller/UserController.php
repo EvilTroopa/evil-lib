@@ -19,11 +19,9 @@ class UserController extends \EvilLib\Controller\AbstractController
 
         $oViewModel->authForm = $oForm;
 
-        if ($this->getRequest()->isPost()) {
-            $aFormData = $this->params()->fromPost();
-
+        if ($this->getRequest()->isPost() && $oForm->setData($this->params()->fromPost())->isValid()) {
+            $aFormData = $oForm->getData();
             $bAuthenticated = $oServiceLocator->get('\EvilLib\Service\UserService')->authenticate($aFormData['userEmail'], $aFormData['userPassword']);
-
             if ($bAuthenticated) {
                 return $this->redirect()->toRoute('Home');
             }

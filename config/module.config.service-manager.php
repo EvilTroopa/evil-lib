@@ -17,6 +17,9 @@ return array(
         'Encryptor' => '\EvilLib\Factory\EncryptionServiceFactory',
         'translator' => '\Zend\Mvc\Service\TranslatorServiceFactory',
         'AuthenticationService' => '\EvilLib\Authentication\AuthenticationServiceFactory',
+        'Session' => '\EvilLib\Factory\SessionFactory',
+        'MailService' => '\EvilLib\Factory\MailServiceFactory',
+        // Forms
         'SignUpForm' => '\EvilLib\Factory\Form\SignUpFormFactory',
     ),
     'services' => array(

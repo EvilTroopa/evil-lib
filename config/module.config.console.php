@@ -9,7 +9,7 @@ return array(
                 'options' => array(
                     'route' => 'create-database-schema',
                     'defaults' => array(
-                        'controller' => 'Application\Controller\Console',
+                        'controller' => 'EvilLib\Controller\Console',
                         'action' => 'createDatabaseSchema',
                     ),
                 ),
@@ -18,7 +18,7 @@ return array(
                 'options' => array(
                     'route' => 'validate-database-schema',
                     'defaults' => array(
-                        'controller' => 'Application\Controller\Console',
+                        'controller' => 'EvilLib\Controller\Console',
                         'action' => 'validateDatabaseSchema',
                     ),
                 ),
@@ -27,7 +27,7 @@ return array(
                 'options' => array(
                     'route' => 'update-database-schema',
                     'defaults' => array(
-                        'controller' => 'Application\Controller\Console',
+                        'controller' => 'EvilLib\Controller\Console',
                         'action' => 'updateDatabaseSchema',
                     ),
                 ),

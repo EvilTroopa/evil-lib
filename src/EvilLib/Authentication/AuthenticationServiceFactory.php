@@ -86,9 +86,9 @@ class AuthenticationServiceFactory implements \Zend\ServiceManager\FactoryInterf
             }
         }
 
-
         // Instanciate storage
-        $oStorage = new \Zend\Authentication\Storage\Session($aStorageConfig['namespace'], $aStorageConfig['member']);
+        $oStorage = new \Zend\Authentication\Storage\Session($aStorageConfig['namespace'], $aStorageConfig['member'], $oServiceLocator->get('Session'));
+
         // Instanciate adapter
         $oAdapter = new \DoctrineModule\Authentication\Adapter\ObjectRepository($aAdapterConfig);
 

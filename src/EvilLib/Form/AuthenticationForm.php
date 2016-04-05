@@ -51,7 +51,7 @@ class AuthenticationForm extends \EvilLib\Form\AbstractForm
                     array(
                         'name' => '\Zend\Validator\StringLength',
                         'options' => array(
-                            'min' => 8,
+                            'min' => 1,
                         ),
                     ),
                 ),

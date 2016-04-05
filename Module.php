@@ -13,6 +13,11 @@ namespace EvilLib;
 class Module
 {
 
+    public function onBootstrap(\Zend\Mvc\MvcEvent $oEvent)
+    {
+        $oSessionManager = $oEvent->getApplication()->getServiceManager()->get('Session');
+    }
+
     public function getConfig()
     {
         return include __DIR__ . '/config/module.config.php';

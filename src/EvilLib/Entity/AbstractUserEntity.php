@@ -35,6 +35,24 @@ abstract class AbstractUserEntity extends \EvilLib\Entity\AbstractEntity impleme
     protected $userName;
 
     /**
+     * @var \Doctrine\Common\Collection\ArrayCollection
+     * @\Doctrine\ORM\Mapping\ManyToMany(targetEntity="\EvilLib\Entity\RoleEntity", inversedBy="roleUsers")
+     * @\Doctrine\ORM\Mapping\JoinTable(name="users_roles",
+     *      joinColumns={@\Doctrine\ORM\Mapping\JoinColumn(name="user_id", referencedColumnName="user_id")},
+     *      inverseJoinColumns={@\Doctrine\ORM\Mapping\JoinColumn(name="role_id", referencedColumnName="role_id")}
+     *      )
+     */
+    protected $userRoles;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->userRoles = new \Doctrine\Common\Collection\ArrayCollection();
+    }
+
+    /**
      * @return integer
      * @throws \LogicException
      */
@@ -128,5 +146,17 @@ abstract class AbstractUserEntity extends \EvilLib\Entity\AbstractEntity impleme
         }
 
         throw new \LogicException('Argument $sUserName expects a string value, "' . gettype($sUserName) . '" given');
+    }
+
+    /**
+     * @return \Doctrine\Common\Collection\ArrayCollection
+     * @throws \LogicException
+     */
+    public function getUserRoles()
+    {
+        if ($this->userRoles instanceof \Doctrine\Common\Collections\Collection) {
+            return $this->userRoles;
+        }
+        throw new \LogicException('Property userRoles expects an instance of \Doctrine\Common\Collections\Collection, "' . (is_object($this->userRoles) ? get_class($this->userRoles) : gettype($this->userRoles)));
     }
 }

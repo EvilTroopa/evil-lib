@@ -27,11 +27,11 @@
 namespace EvilLib\Service;
 
 /**
- * Description of UsersService
+ * Description of UserService
  *
  * @author EvilTroopa
  */
-class UserService extends \EvilLib\Service\AbstractService
+class UserService extends \EvilLib\Service\AbstractService implements \BjyAuthorize\Provider\Identity\ProviderInterface
 {
 
     /**
@@ -66,10 +66,11 @@ class UserService extends \EvilLib\Service\AbstractService
         }
 
         $oAuthenticationService = $this->getServiceLocator()->get('AuthenticationService');
-        $oAuthenticationResult = $oAuthenticationService->getAdapter()->setIdentityValue($sUserEmail)->setCredentialValue($sUserPassword)->authenticate();
+        $oAuthenticationService->getAdapter()->setIdentity($sUserEmail)->setCredential($sUserPassword);
+        $oAuthenticationResult = $oAuthenticationService->authenticate();
 
         if ($oAuthenticationResult instanceof \Zend\Authentication\Result) {
-            return $oAuthenticationResult->getCode() === 1;
+            return ($oAuthenticationResult->getCode() === \Zend\Authentication\Result::SUCCESS);
         }
         throw new \LogicException('$oAuthenticationResult expects an instance \Zend\Authentication\Result, "' . (is_object($oAuthenticationResult) ? get_class($oAuthenticationResult) : gettype($oAuthenticationResult)));
     }
@@ -81,5 +82,25 @@ class UserService extends \EvilLib\Service\AbstractService
     {
         $this->getServiceLocator()->get('AuthenticationService')->clearIdentity();
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getIdentityRoles()
+    {
+        $oServiceLocator = $this->getServiceLocator();
+        $oAuthenticationService = $this->getServiceLocator()->get('AuthenticationService');
+        if ($oAuthenticationService->hasIdentity()) {
+            $sUserClassName = get_class($oAuthenticationService->getIdentity());
+            $oUserEntity = $oServiceLocator->get('\Doctrine\ORM\EntityManager')->getRepository($sUserClassName)->find($oAuthenticationService->getIdentity()->getUserId());
+
+            $aRoles = array();
+            foreach ($oUserEntity->getUserRoles() as $oUserRole) {
+                $aRoles[] = $oUserRole->getRoleName();
+            }
+            return $aRoles;
+        }
+        return array('guest');
     }
 }
