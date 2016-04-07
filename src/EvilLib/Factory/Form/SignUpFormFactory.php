@@ -14,7 +14,7 @@ class SignUpFormFactory implements \Zend\ServiceManager\FactoryInterface
     {
         $oEntityManager = $oServiceLocator->get('Doctrine\ORM\EntityManager');
 
-        $oForm = new \EvilLib\Form\SignUpForm();
+        $oForm = new \EvilLib\Form\SignUpForm(array('object_repository' => $oServiceLocator->get('\EvilLib\Repository\UserRepository')));
         $oForm->setHydrator(new \DoctrineModule\Stdlib\Hydrator\DoctrineObject($oEntityManager, false));
 
         return $oForm;

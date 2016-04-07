@@ -27,9 +27,10 @@
 namespace EvilLib\Entity;
 
 /**
- * @\Doctrine\ORM\Mapping\MappedSuperclass
+ * @\Doctrine\ORM\Mapping\Entity(repositoryClass="\EvilLib\Repository\RoleRepository")
+ * @\Doctrine\ORM\Mapping\Table(name="roles")
  */
-abstract class AbstractRoleEntity implements \Zend\Permissions\Acl\Role\RoleInterface
+class RoleEntity implements \Zend\Permissions\Acl\Role\RoleInterface
 {
 
     /**
@@ -48,9 +49,17 @@ abstract class AbstractRoleEntity implements \Zend\Permissions\Acl\Role\RoleInte
 
     /**
      * @var \Doctrine\Common\Collection\ArrayCollection
-     * @\Doctrine\ORM\Mapping\ManyToMany(targetEntity="\EvilLib\Entity\AbstractUserEntity", mappedBy="usersRoles")
+     * @\Doctrine\ORM\Mapping\ManyToMany(targetEntity="\EvilLib\Entity\UserEntity", mappedBy="userRoles")
      */
     protected $roleUsers;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->roleUsers = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * @return integer
@@ -96,9 +105,9 @@ abstract class AbstractRoleEntity implements \Zend\Permissions\Acl\Role\RoleInte
      */
     public function getRoleUsers()
     {
-        if ($this->roleUsers instanceof \Doctrine\Common\Collection\Collection) {
+        if ($this->roleUsers instanceof \Doctrine\Common\Collections\Collection) {
             return $this->roleUsers;
         }
-        throw new \LogicException('Property roleUsers expects an instance of \Doctrine\Common\Collection\Collection, "' . (is_object($this->roleUsers) ? get_class($this->roleUsers) : gettype($this->roleUsers)));
+        throw new \LogicException('Property roleUsers expects an instance of \Doctrine\Common\Collections\Collection, "' . (is_object($this->roleUsers) ? get_class($this->roleUsers) : gettype($this->roleUsers)));
     }
 }

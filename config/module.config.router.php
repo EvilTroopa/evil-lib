@@ -24,12 +24,21 @@ return array(
                     ),
                     'may_terminate' => true,
                     'child_routes' => array(
+                        'Ok' => array(
+                            'type' => 'Zend\Mvc\Router\Http\Segment',
+                            'options' => array(
+                                'route' => 'ok[/]',
+                                'defaults' => array(
+                                    'action' => 'signUpOk',
+                                ),
+                            ),
+                        ),
                         'Validate' => array(
                             'type' => 'Zend\Mvc\Router\Http\Segment',
                             'options' => array(
                                 'route' => 'validate/:hash[/]',
                                 'defaults' => array(
-                                    'action' => 'validate',
+                                    'action' => 'signUpValidate',
                                 ),
                             ),
                         ),

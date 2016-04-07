@@ -3,17 +3,22 @@
 namespace EvilLib;
 
 return array(
-    'protocol' => 'smtp',
-    'options' => array(
-        'name' => 'localhost',
-        'host' => 'smtp.myserver.com',
-        'connection_class' => 'login',
-        'port' => 1234,
-        'connection_config' => array(
-            'auth' => 'login',
-            'ssl' => 'tls',
-            'user' => 'email@myserver.com',
-            'password' => 'KTHXBYE',
+    'connection' => array(
+        'protocol' => 'smtp',
+        'options' => array(
+            'name' => 'localhost',
+            'host' => 'smtp.myserver.com',
+            'connection_class' => 'login',
+            'port' => 1234,
+            'connection_config' => array(
+                'ssl' => 'tls',
+                'username' => 'email@myserver.com',
+                'password' => 'KTHXBYE',
+            ),
         ),
+    ),
+    'default_values' => array(
+        'from' => 'blah@myserver.com',
+        'from_label' => null,
     ),
 );

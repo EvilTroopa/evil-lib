@@ -69,6 +69,15 @@ class MailService extends \EvilLib\Service\AbstractService
      */
     public function sendMail(\Zend\View\Model\ViewModel $oViewModel, array $aOptions)
     {
+        $oServiceLocator = $this->getServiceLocator();
+
+        // Retrieve default values from config
+        $aConfig = $oServiceLocator->get('configuration');
+        if (isset($aConfig['mail']) && isset($aConfig['mail']['default_values'])) {
+            $aOptions = array_replace_recursive($aConfig['mail']['default_values'], $aOptions);
+        }
+
+        // Check values
         if (!array_key_exists('from', $aOptions)) {
             throw new \InvalidArgumentException('Argument $aOptions should contain an entry named "from"');
         }
@@ -79,8 +88,7 @@ class MailService extends \EvilLib\Service\AbstractService
             throw new \InvalidArgumentException('Argument $aOptions should contain an entry named "subject"');
         }
 
-        $oServiceLocator = $this->getServiceLocator();
-
+        // Setup message
         $oMessage = new \Zend\Mail\Message();
         $oMessage
                 ->setFrom($aOptions['from'])
@@ -91,10 +99,12 @@ class MailService extends \EvilLib\Service\AbstractService
         $oMessage->getHeaders()
                 ->addHeaderLine('Content-Type: text/html');
 
+        // Check message
         if (!$oMessage->isValid()) {
             throw new \LogicException('Email message not valid, could not send : "' . $oMessage->toString() . '"');
         }
 
+        // Send message
         $this->getTransporter()->send($oMessage);
 
         return $this;

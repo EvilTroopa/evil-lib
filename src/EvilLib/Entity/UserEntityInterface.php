@@ -42,4 +42,42 @@ interface UserEntityInterface
      * @return \EvilLib\Entity\UserEntity
      */
     public function setUserName($sUserName);
+
+    /**
+     * @return integer
+     */
+    public function getUserStatus();
+
+    /**
+     * @param integer $iUserStatus
+     * @return \EvilLib\Entity\UserEntity
+     */
+    public function setUserStatus($iUserStatus);
+
+    /**
+     * @return string
+     */
+    public function getUserSignUpHashKey();
+
+    /**
+     * @param string $sUserSignUpHashKey
+     * @return \EvilLib\Entity\UserEntity
+     */
+    public function setUserSignUpHashKey($sUserSignUpHashKey);
+
+    /**
+     * @return string
+     */
+    public function getUserPasswordHashKey();
+
+    /**
+     * @param string $sUserPasswordHashKey
+     * @return \EvilLib\Entity\UserEntity
+     */
+    public function setUserPasswordHashKey($sUserPasswordHashKey);
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUserRoles();
 }

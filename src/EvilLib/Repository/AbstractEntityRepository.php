@@ -14,7 +14,7 @@ class AbstractEntityRepository extends \Doctrine\ORM\EntityRepository
     {
         $sEntityName = $this->getEntityName();
         if ($oEntity instanceof $sEntityName) {
-            $this->getEntityManager()->persist();
+            $this->getEntityManager()->persist($oEntity);
             $this->getEntityManager()->flush();
             return $this;
         }

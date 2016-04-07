@@ -16,12 +16,15 @@ class MailServiceFactory implements \Zend\ServiceManager\FactoryInterface
         if (!array_key_exists('mail', $aConfig)) {
             throw new \LogicException('Config should contain an entry named "mail"');
         }
-        $aMailConfig = $aConfig['mail'];
+        if (!array_key_exists('connection', $aConfig['mail'])) {
+            throw new \LogicException('Mail config should contain an entry named "connection"');
+        }
+        $aMailConfig = $aConfig['mail']['connection'];
         if (!array_key_exists('protocol', $aMailConfig)) {
-            throw new \LogicException('Mail config should contain an entry named "protocol"');
+            throw new \LogicException('Mail connection config should contain an entry named "protocol"');
         }
         if (!array_key_exists('options', $aMailConfig)) {
-            throw new \LogicException('Mail config should contain an entry named "options"');
+            throw new \LogicException('Mail connection config should contain an entry named "options"');
         }
 
         switch ($aMailConfig['protocol']) {

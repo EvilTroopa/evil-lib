@@ -3,10 +3,31 @@
 namespace EvilLib\Entity;
 
 /**
- * @\Doctrine\ORM\Mapping\MappedSuperclass
+ * @\Doctrine\ORM\Mapping\Entity(repositoryClass="\EvilLib\Repository\UserRepository")
+ * @\Doctrine\ORM\Mapping\Table(name="users")
  */
-abstract class AbstractUserEntity extends \EvilLib\Entity\AbstractEntity implements \EvilLib\Entity\UserEntityInterface
+class UserEntity extends \EvilLib\Entity\AbstractEntity implements \EvilLib\Entity\UserEntityInterface
 {
+
+    /**
+     * @var integer
+     */
+    const USER_STATUS_PENDING = 0;
+
+    /**
+     * @var integer
+     */
+    const USER_STATUS_ACTIVE = 1;
+
+    /**
+     * @var integer
+     */
+    const USER_STATUS_BLOCKED = 2;
+
+    /**
+     * @var integer
+     */
+    const USER_STATUS_DISABLED = -1;
 
     /**
      * @var integer
@@ -35,6 +56,24 @@ abstract class AbstractUserEntity extends \EvilLib\Entity\AbstractEntity impleme
     protected $userName;
 
     /**
+     * @var integer
+     * @\Doctrine\ORM\Mapping\Column(type="integer", name="user_status")
+     */
+    protected $userStatus = self::USER_STATUS_PENDING;
+
+    /**
+     * @var string
+     * @\Doctrine\ORM\Mapping\Column(type="string", name="user_sign_up_hash_key", length=255)
+     */
+    protected $userSignUpHashKey;
+
+    /**
+     * @var string
+     * @\Doctrine\ORM\Mapping\Column(type="string", name="user_password_hash_key", length=255, nullable=true)
+     */
+    protected $userPasswordHashKey;
+
+    /**
      * @var \Doctrine\Common\Collection\ArrayCollection
      * @\Doctrine\ORM\Mapping\ManyToMany(targetEntity="\EvilLib\Entity\RoleEntity", inversedBy="roleUsers")
      * @\Doctrine\ORM\Mapping\JoinTable(name="users_roles",
@@ -49,7 +88,7 @@ abstract class AbstractUserEntity extends \EvilLib\Entity\AbstractEntity impleme
      */
     public function __construct()
     {
-        $this->userRoles = new \Doctrine\Common\Collection\ArrayCollection();
+        $this->userRoles = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -79,7 +118,7 @@ abstract class AbstractUserEntity extends \EvilLib\Entity\AbstractEntity impleme
 
     /**
      * @param string $sUserEmail
-     * @return \EvilLib\Entity\AbstractUserEntity
+     * @return \EvilLib\Entity\UserEntity
      * @throws \LogicException
      */
     public function setUserEmail($sUserEmail)
@@ -107,7 +146,7 @@ abstract class AbstractUserEntity extends \EvilLib\Entity\AbstractEntity impleme
 
     /**
      * @param string $sUserPassword
-     * @return \EvilLib\Entity\AbstractUserEntity
+     * @return \EvilLib\Entity\UserEntity
      * @throws \LogicException
      */
     public function setUserPassword($sUserPassword)
@@ -135,7 +174,7 @@ abstract class AbstractUserEntity extends \EvilLib\Entity\AbstractEntity impleme
 
     /**
      * @param string $sUserName
-     * @return \EvilLib\Entity\AbstractUserEntity
+     * @return \EvilLib\Entity\UserEntity
      * @throws \LogicException
      */
     public function setUserName($sUserName)
@@ -158,5 +197,87 @@ abstract class AbstractUserEntity extends \EvilLib\Entity\AbstractEntity impleme
             return $this->userRoles;
         }
         throw new \LogicException('Property userRoles expects an instance of \Doctrine\Common\Collections\Collection, "' . (is_object($this->userRoles) ? get_class($this->userRoles) : gettype($this->userRoles)));
+    }
+
+    /**
+     * @return integer
+     * @throws \LogicException
+     */
+    public function getUserStatus()
+    {
+        if (is_int($this->userStatus)) {
+            return $this->userStatus;
+        }
+        throw new \LogicException('Property userStatus expects an integer value, "' . gettype($this->userStatus) . '" defined');
+    }
+
+    /**
+     * @param integer $iUserStatus
+     * @return \EvilLib\Entity\UserEntity
+     * @throws \InvalidArgumentException
+     */
+    public function setUserStatus($iUserStatus)
+    {
+        if (is_int($iUserStatus)) {
+            $this->userStatus = $iUserStatus;
+            return $this;
+        }
+        throw new \InvalidArgumentException('Argument $iUserStatus expects an integer value, "' . gettype($iUserStatus) . '" given');
+    }
+
+    /**
+     * @return string
+     * @throws \LogicException
+     */
+    public function getUserSignUpHashKey()
+    {
+        if (is_string($this->userSignUpHashKey)) {
+            return $this->userSignUpHashKey;
+        }
+
+        throw new \LogicException('Property userSignUpHashKey expects a string value, "' . gettype($this->userSignUpHashKey) . '" defined');
+    }
+
+    /**
+     * @param string $sUserSignUpHashKey
+     * @return \EvilLib\Entity\UserEntity
+     * @throws \LogicException
+     */
+    public function setUserSignUpHashKey($sUserSignUpHashKey)
+    {
+        if (is_string($sUserSignUpHashKey)) {
+            $this->userSignUpHashKey = $sUserSignUpHashKey;
+            return $this;
+        }
+
+        throw new \LogicException('Argument $sUserSignUpHashKey expects a string value, "' . gettype($sUserSignUpHashKey) . '" given');
+    }
+
+    /**
+     * @return string
+     * @throws \LogicException
+     */
+    public function getUserPasswordHashKey()
+    {
+        if (is_string($this->userPasswordHashKey)) {
+            return $this->userPasswordHashKey;
+        }
+
+        throw new \LogicException('Property userPasswordHashKey expects a string value, "' . gettype($this->userPasswordHashKey) . '" defined');
+    }
+
+    /**
+     * @param string $sUserPasswordHashKey
+     * @return \EvilLib\Entity\UserEntity
+     * @throws \LogicException
+     */
+    public function setUserPasswordHashKey($sUserPasswordHashKey)
+    {
+        if (is_string($sUserPasswordHashKey)) {
+            $this->userPasswordHashKey = $sUserPasswordHashKey;
+            return $this;
+        }
+
+        throw new \LogicException('Argument $sUserPasswordHashKey expects a string value, "' . gettype($sUserPasswordHashKey) . '" given');
     }
 }

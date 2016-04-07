@@ -50,6 +50,62 @@ class UserService extends \EvilLib\Service\AbstractService implements \BjyAuthor
     }
 
     /**
+     * @param \EvilLib\Entity\UserEntityInterface $oUserEntity
+     * @return \EvilLib\Service\UserService
+     */
+    public function processUserSignUp(\EvilLib\Entity\UserEntityInterface $oUserEntity)
+    {
+        // Retrieve Service locator and User Repository
+        $oServiceLocator = $this->getServiceLocator();
+        $oUserRepository = $oServiceLocator->get('\Doctrine\ORM\EntityManager')->getRepository(get_class($oUserEntity));
+
+        if (!($oUserRepository instanceof \EvilLib\Repository\AbstractEntityRepository)) {
+            throw new \LogicException('User Repository expects an instance of \EvilLib\Repository\AbstractEntityRepository');
+        }
+
+        // Prepare sign up hash key
+        $oCurrentDate = new \DateTime();
+        $sUserSignUpHashKey = sha1(uniqid() . $oUserEntity->getUserEmail()) . '-' . sha1($oCurrentDate->format('Y-m-d\TH:i:s'));
+
+        // Update user entity date
+        $oUserEntity->setUserSignUpHashKey($sUserSignUpHashKey)
+                ->setUserPassword($oServiceLocator->get('Encryptor')->hash($oUserEntity->getUserPassword()));
+
+//        $oRoleEntity = $oServiceLocator->get('\EvilLib\Repository\RoleRepository')->find(1);
+//        $oUserEntity->getUserRoles()->add($oRoleEntity);
+//        Persist user entity
+        $oUserRepository->createEntity($oUserEntity);
+        // Send sign-up mail
+        $this->sendSignUpValidateEmail($oUserEntity);
+
+        return $this;
+    }
+
+    /**
+     * Override this (and the view) to send your own email
+     * @param \EvilLib\Entity\UserEntityInterface $oUserEntity
+     * @return \EvilLib\Service\UserService
+     */
+    public function sendSignUpValidateEmail(\EvilLib\Entity\UserEntityInterface $oUserEntity)
+    {
+        // Retrieve Service locator and User Repository
+        $oServiceLocator = $this->getServiceLocator();
+
+        // Prepare validate link
+        $sValidateLink = $oServiceLocator->get('Router')->assemble(array('hash' => $oUserEntity->getUserSignUpHashKey()), array('name' => 'Home/SignUp/Validate', 'force_canonical' => true));
+        $oMailViewModel = new \Zend\View\Model\ViewModel();
+        $oMailViewModel->setTemplate('evillib/mail/sign-up-validate')->setVariable('validateUrl', $sValidateLink);
+
+        $oServiceLocator->get('MailService')->sendMail($oMailViewModel, array(
+            'from' => 'email@myserver.com',
+            'to' => $oUserEntity->getUserEmail(),
+            'subject' => 'My website - Validate account',
+        ));
+
+        return $this;
+    }
+
+    /**
      * @param string $sUserEmail
      * @param string $sUserPassword
      * @return boolean
@@ -73,6 +129,14 @@ class UserService extends \EvilLib\Service\AbstractService implements \BjyAuthor
             return ($oAuthenticationResult->getCode() === \Zend\Authentication\Result::SUCCESS);
         }
         throw new \LogicException('$oAuthenticationResult expects an instance \Zend\Authentication\Result, "' . (is_object($oAuthenticationResult) ? get_class($oAuthenticationResult) : gettype($oAuthenticationResult)));
+    }
+
+    /**
+     * @return \EvilLib\Entity\UserEntity
+     */
+    public function getUser()
+    {
+        return $this->getServiceLocator()->get('AuthenticationService')->getIdentity();
     }
 
     /**

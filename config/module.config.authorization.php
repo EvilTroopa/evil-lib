@@ -20,6 +20,7 @@ return array(
             array('route' => 'Home/LogOut', 'roles' => array('user')),
             array('route' => 'Home/LogIn', 'roles' => array('guest')),
             array('route' => 'Home/SignUp', 'roles' => array('guest')),
+            array('route' => 'Home/SignUp/Ok', 'roles' => array('guest')),
             array('route' => 'Home/SignUp/Validate', 'roles' => array('guest')),
             array('route' => 'Home/EditUser', 'roles' => array('user')),
             // Console

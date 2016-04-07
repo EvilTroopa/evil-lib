@@ -22,7 +22,4 @@ return array(
         // Forms
         'SignUpForm' => '\EvilLib\Factory\Form\SignUpFormFactory',
     ),
-    'services' => array(
-        'UserService' => '\EvilLib\Service\UserService',
-    ),
 );
