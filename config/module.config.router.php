@@ -64,6 +64,36 @@ return array(
                         ),
                     ),
                 ),
+                'LostPassword' => array(
+                    'type' => 'Zend\Mvc\Router\Http\Segment',
+                    'options' => array(
+                        'route' => 'lost-password[/]',
+                        'defaults' => array(
+                            'controller' => 'EvilLib\Controller\User',
+                            'action' => 'lostPassword',
+                        ),
+                    ),
+                ),
+                'RenewPassword' => array(
+                    'type' => 'Zend\Mvc\Router\Http\Segment',
+                    'options' => array(
+                        'route' => 'renew-password/:hash[/]',
+                        'defaults' => array(
+                            'controller' => 'EvilLib\Controller\User',
+                            'action' => 'renewPassword',
+                        ),
+                    ),
+                ),
+                'RenewPasswordOk' => array(
+                    'type' => 'Zend\Mvc\Router\Http\Segment',
+                    'options' => array(
+                        'route' => 'renew-password-ok[/]',
+                        'defaults' => array(
+                            'controller' => 'EvilLib\Controller\User',
+                            'action' => 'renewPasswordOk',
+                        ),
+                    ),
+                ),
                 'EditUser' => array(
                     'type' => 'Zend\Mvc\Router\Http\Segment',
                     'options' => array(

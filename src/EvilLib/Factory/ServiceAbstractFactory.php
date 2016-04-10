@@ -31,6 +31,8 @@ class ServiceAbstractFactory implements \Zend\ServiceManager\AbstractFactoryInte
      */
     public function createServiceWithName(\Zend\ServiceManager\ServiceLocatorInterface $oServiceLocator, $sName, $sRequestedName)
     {
-        return new $sRequestedName($oServiceLocator);
+        $oService = new $sRequestedName();
+        $oService->setServiceLocator($oServiceLocator);
+        return $oService;
     }
 }

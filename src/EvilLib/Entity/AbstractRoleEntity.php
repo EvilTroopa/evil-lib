@@ -27,10 +27,9 @@
 namespace EvilLib\Entity;
 
 /**
- * @\Doctrine\ORM\Mapping\Entity(repositoryClass="\EvilLib\Repository\RoleRepository")
- * @\Doctrine\ORM\Mapping\Table(name="roles")
+ * @\Doctrine\ORM\Mapping\MappedSuperclass
  */
-class RoleEntity implements \Zend\Permissions\Acl\Role\RoleInterface
+class AbstractRoleEntity implements \Zend\Permissions\Acl\Role\RoleInterface
 {
 
     /**
@@ -49,7 +48,7 @@ class RoleEntity implements \Zend\Permissions\Acl\Role\RoleInterface
 
     /**
      * @var \Doctrine\Common\Collection\ArrayCollection
-     * @\Doctrine\ORM\Mapping\ManyToMany(targetEntity="\EvilLib\Entity\UserEntity", mappedBy="userRoles")
+     * @\Doctrine\ORM\Mapping\ManyToMany(targetEntity="\EvilLib\Entity\AbstractUserEntity", mappedBy="userRoles")
      */
     protected $roleUsers;
 

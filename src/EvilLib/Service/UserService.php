@@ -52,6 +52,7 @@ class UserService extends \EvilLib\Service\AbstractService implements \BjyAuthor
     /**
      * @param \EvilLib\Entity\UserEntityInterface $oUserEntity
      * @return \EvilLib\Service\UserService
+     * @throws \LogicException
      */
     public function processUserSignUp(\EvilLib\Entity\UserEntityInterface $oUserEntity)
     {
@@ -71,8 +72,10 @@ class UserService extends \EvilLib\Service\AbstractService implements \BjyAuthor
         $oUserEntity->setUserSignUpHashKey($sUserSignUpHashKey)
                 ->setUserPassword($oServiceLocator->get('Encryptor')->hash($oUserEntity->getUserPassword()));
 
-//        $oRoleEntity = $oServiceLocator->get('\EvilLib\Repository\RoleRepository')->find(1);
-//        $oUserEntity->getUserRoles()->add($oRoleEntity);
+        // Add default role
+        $sRoleEntityClassName = $this->getRoleEntityClassName();
+        $oRoleEntity = $oServiceLocator->get('\Doctrine\ORM\EntityManager')->getRepository($sRoleEntityClassName)->find(1);
+        $oUserEntity->getUserRoles()->add($oRoleEntity);
 //        Persist user entity
         $oUserRepository->createEntity($oUserEntity);
         // Send sign-up mail
@@ -97,7 +100,6 @@ class UserService extends \EvilLib\Service\AbstractService implements \BjyAuthor
         $oMailViewModel->setTemplate('evillib/mail/sign-up-validate')->setVariable('validateUrl', $sValidateLink);
 
         $oServiceLocator->get('MailService')->sendMail($oMailViewModel, array(
-            'from' => 'email@myserver.com',
             'to' => $oUserEntity->getUserEmail(),
             'subject' => 'My website - Validate account',
         ));
@@ -166,5 +168,155 @@ class UserService extends \EvilLib\Service\AbstractService implements \BjyAuthor
             return $aRoles;
         }
         return array('guest');
+    }
+
+    /**
+     * @return string
+     * @throws \LogicException
+     */
+    public function getUserEntityClassName()
+    {
+        // Retrieve config
+        $aConfig = $this->getServiceLocator()->get('configuration');
+
+        // Check config
+        if (!array_key_exists('authentication', $aConfig)) {
+            throw new \LogicException('Config should contain an entry named "authentication"');
+        }
+        if (!array_key_exists('entities', $aConfig['authentication'])) {
+            throw new \LogicException('Config authentication should contain an entry named "entities"');
+        }
+        if (!array_key_exists('user_entity', $aConfig['authentication']['entities']) || !is_string($aConfig['authentication']['entities']['user_entity'])) {
+            throw new \LogicException('Config authentication entities should contain an string entry named "user_entity"');
+        }
+
+        // Check user entity class
+        if (!class_exists($aConfig['authentication']['entities']['user_entity'])) {
+            throw new \LogicException('Defined user entity class name does not exists : "' . $aConfig['authentication']['entities']['user_entity'] . '"');
+        }
+        if (!is_subclass_of($aConfig['authentication']['entities']['user_entity'], '\EvilLib\Entity\AbstractUserEntity')) {
+            throw new \LogicException('Defined user entity class name should be an instance of \EvilLib\Entity\AbstractUserEntity');
+        }
+
+        return $aConfig['authentication']['entities']['user_entity'];
+    }
+
+    /**
+     * @return string
+     * @throws \LogicException
+     */
+    public function getRoleEntityClassName()
+    {
+        // Retrieve config
+        $aConfig = $this->getServiceLocator()->get('configuration');
+
+        // Check config
+        if (!array_key_exists('authentication', $aConfig)) {
+            throw new \LogicException('Config should contain an entry named "authentication"');
+        }
+        if (!array_key_exists('entities', $aConfig['authentication'])) {
+            throw new \LogicException('Config authentication should contain an entry named "entities"');
+        }
+        if (!array_key_exists('role_entity', $aConfig['authentication']['entities']) || !is_string($aConfig['authentication']['entities']['role_entity'])) {
+            throw new \LogicException('Config authentication entities should contain an string entry named "role_entity"');
+        }
+
+        // Check user entity class
+        if (!class_exists($aConfig['authentication']['entities']['role_entity'])) {
+            throw new \LogicException('Defined role entity class name does not exists : "' . $aConfig['authentication']['entities']['role_entity'] . '"');
+        }
+        if (!is_subclass_of($aConfig['authentication']['entities']['role_entity'], '\EvilLib\Entity\AbstractRoleEntity')) {
+            throw new \LogicException('Defined role entity class name should be an instance of \EvilLib\Entity\AbstractRoleEntity');
+        }
+
+        return $aConfig['authentication']['entities']['role_entity'];
+    }
+
+    /**
+     * @param string $sUserSignUpHashKey
+     * @return boolean
+     * @throws \InvalidArgumentException
+     */
+    public function validateUser($sUserSignUpHashKey)
+    {
+        // Check arguments
+        if (!is_string($sUserSignUpHashKey)) {
+            throw new \InvalidArgumentException('Argument $sUserSignUpHashKey expects a string value, "' . gettype($sUserSignUpHashKey) . '" given');
+        }
+
+        // Retrieve user from hash key
+        $oUserRepository = $this->getServiceLocator()->get('\Doctrine\ORM\EntityManager')->getRepository($this->getUserEntityClassName());
+        $oUserEntity = $oUserRepository->findOneBy(array('userSignUpHashKey' => $sUserSignUpHashKey, 'userStatus' => \EvilLib\Entity\AbstractUserEntity::USER_STATUS_PENDING));
+
+        if ($oUserEntity instanceof \EvilLib\Entity\AbstractUserEntity) {
+            $oUserRepository->updateEntity($oUserEntity->setUserStatus(\EvilLib\Entity\AbstractUserEntity::USER_STATUS_ACTIVE));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param array $aUserData
+     * @return boolean
+     * @throws \InvalidArgumentException
+     */
+    public function processUserLostPassword(array $aUserData)
+    {
+        // Check arguments
+        if (!array_key_exists('userEmail', $aUserData)) {
+            throw new \InvalidArgumentException('Argument $aUserData should contain an entry named "userEmail"');
+        }
+        $sUserEmail = $aUserData['userEmail'];
+        if (!is_string($sUserEmail)) {
+            throw new \InvalidArgumentException('Argument $aUserData[userEmail] expects a string value, "' . gettype($sUserEmail) . '" given');
+        }
+
+        // Retrieve Service locator and User Repository
+        $oServiceLocator = $this->getServiceLocator();
+        $oUserRepository = $oServiceLocator->get('\Doctrine\ORM\EntityManager')->getRepository($this->getUserEntityClassName());
+
+        $oUserEntity = $oUserRepository->findOneBy(array('userEmail' => $sUserEmail));
+
+        if (!($oUserEntity instanceof \EvilLib\Entity\UserEntityInterface)) {
+            return false;
+        }
+
+        // Prepare renew password hash key
+        $oCurrentDate = new \DateTime();
+        $sUserRenewPasswordHashKey = sha1(uniqid() . $oUserEntity->getUserEmail()) . '-' . sha1($oCurrentDate->format('Y-m-d\TH:i:s'));
+
+        // Update user entity date
+        $oUserEntity->setUserPasswordHashKey($sUserRenewPasswordHashKey);
+
+        // Persist user entity
+        $oUserRepository->updateEntity($oUserEntity);
+        // Send sign-up mail
+        $this->sendRenewPasswordEmail($oUserEntity);
+
+        return true;
+    }
+
+    /**
+     * Override this (and the view) to send your own email
+     * @param \EvilLib\Entity\UserEntityInterface $oUserEntity
+     * @return \EvilLib\Service\UserService
+     */
+    public function sendRenewPasswordEmail(\EvilLib\Entity\UserEntityInterface $oUserEntity)
+    {
+        // Retrieve Service locator and User Repository
+        $oServiceLocator = $this->getServiceLocator();
+
+        // Prepare validate link
+        $sRenewPasswordLink = $oServiceLocator->get('Router')->assemble(array('hash' => $oUserEntity->getUserPasswordHashKey()), array('name' => 'Home/RenewPassword', 'force_canonical' => true));
+        $oMailViewModel = new \Zend\View\Model\ViewModel();
+        $oMailViewModel->setTemplate('evillib/mail/renew-password')->setVariable('renewPasswordUrl', $sRenewPasswordLink);
+
+        $oServiceLocator->get('MailService')->sendMail($oMailViewModel, array(
+            'to' => $oUserEntity->getUserEmail(),
+            'subject' => 'My website - Renew password',
+        ));
+
+        return $this;
     }
 }

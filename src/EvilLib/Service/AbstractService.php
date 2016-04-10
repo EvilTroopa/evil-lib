@@ -31,22 +31,13 @@ namespace EvilLib\Service;
  *
  * @author EvilTroopa
  */
-abstract class AbstractService
+abstract class AbstractService implements \Zend\ServiceManager\ServiceLocatorAwareInterface
 {
 
     /**
      * @var \Zend\ServiceManager\ServiceLocatorInterface
      */
     protected $serviceLocator;
-
-    /**
-     * Constructor
-     * @param \Zend\ServiceManager\ServiceLocatorInterface $oServiceLocator
-     */
-    public function __construct(\Zend\ServiceManager\ServiceLocatorInterface $oServiceLocator)
-    {
-        $this->serviceLocator = $oServiceLocator;
-    }
 
     /**
      * @return \Zend\ServiceManager\ServiceLocatorInterface
@@ -58,5 +49,15 @@ abstract class AbstractService
             return $this->serviceLocator;
         }
         throw new \LogicException('Property $serviceLocator expects an instance of \Zend\ServiceManager\ServiceLocatorInterface, "' . (is_object($this->serviceLocator) ? get_class($this->serviceLocator) : gettype($this->serviceLocator)) . '" defined');
+    }
+
+    /**
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     * @throws \LogicException
+     */
+    public function setServiceLocator(\Zend\ServiceManager\ServiceLocatorInterface $oServiceLocator)
+    {
+        $this->serviceLocator = $oServiceLocator;
+        return $this->serviceLocator;
     }
 }

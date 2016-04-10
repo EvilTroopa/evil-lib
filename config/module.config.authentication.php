@@ -13,6 +13,10 @@ return array(
         'identity_class' => '\EvilLib\Entity\AbstractUserEntity',
         'identity_property' => 'userEmail',
         'credential_property' => 'userPassword',
-        'credential_callable' => array('\EvilLib\Service\UserService', 'checkUserPassword'),
+        'credential_callable' => array('UserService', 'checkUserPassword'),
+    ),
+    'entities' => array(
+        'user_entity' => '\EvilLib\Entity\AbstractUserEntity',
+        'role_entity' => '\EvilLib\Entity\AbstractRoleEntity',
     ),
 );

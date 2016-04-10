@@ -1,6 +1,7 @@
 {% extends 'layout/layout' %}
 
 {% block content %}
+    <h2>{{ translate('sign_up_title') }}</h2>
     {% do authForm.prepare() %}
     {{ form().openTag(signUpForm)|raw }}
     {{ formRow(signUpForm.get('csrf')) }}

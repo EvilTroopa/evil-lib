@@ -15,7 +15,19 @@ class Module
 
     public function onBootstrap(\Zend\Mvc\MvcEvent $oEvent)
     {
-        $oSessionManager = $oEvent->getApplication()->getServiceManager()->get('Session');
+        $oServiceLocator = $oEvent->getApplication()->getServiceManager();
+        $aConfig = $oServiceLocator->get('configuration');
+        if (!array_key_exists('translator', $aConfig)) {
+            throw new \LogicException('Config should contain an entry named "translator"');
+        }
+
+        if (!array_key_exists('fallback_locale', $aConfig['translator']) || !is_string($aConfig['translator']['fallback_locale']) || !\Locale::getDisplayName($aConfig['translator']['fallback_locale'])) {
+            throw new \LogicException('Config translator "fallback_locale" expects a valid locale string value, "' . gettype($aConfig['translator']['fallback_locale']) . '" given' . (is_string($aConfig['translator']['fallback_locale']) ? '' : ', value : "' . $aConfig['translator']['fallback_locale'] . '"'));
+        }
+
+        $oTranslator = $oServiceLocator->get('MvcTranslator');
+        $oTranslator->setLocale(\Locale::acceptFromHttp($oEvent->getRequest()->getServer('HTTP_ACCEPT_LANGUAGE')))
+                ->setFallbackLocale($aConfig['translator']['fallback_locale']);
     }
 
     public function getConfig()

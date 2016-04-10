@@ -10,7 +10,7 @@ return array(
         '\Zend\Cache\Service\StorageCacheAbstractServiceFactory',
         '\Zend\Log\LoggerAbstractServiceFactory',
         '\EvilLib\Factory\RepositoryAbstractFactory',
-        '\EvilLib\Factory\ServiceAbstractFactory',
+//        '\EvilLib\Factory\ServiceAbstractFactory',
         '\EvilLib\Factory\ControllerAbstractFactory',
     ),
     'factories' => array(
@@ -21,5 +21,9 @@ return array(
         'MailService' => '\EvilLib\Factory\MailServiceFactory',
         // Forms
         'SignUpForm' => '\EvilLib\Factory\Form\SignUpFormFactory',
+        'LostPasswordForm' => '\EvilLib\Factory\Form\LostPasswordFormFactory',
+    ),
+    'invokables' => array(
+        'UserService' => '\EvilLib\Service\UserService',
     ),
 );

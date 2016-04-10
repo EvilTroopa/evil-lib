@@ -3,10 +3,9 @@
 namespace EvilLib\Entity;
 
 /**
- * @\Doctrine\ORM\Mapping\Entity(repositoryClass="\EvilLib\Repository\UserRepository")
- * @\Doctrine\ORM\Mapping\Table(name="users")
+ * @\Doctrine\ORM\Mapping\MappedSuperclass
  */
-class UserEntity extends \EvilLib\Entity\AbstractEntity implements \EvilLib\Entity\UserEntityInterface
+abstract class AbstractUserEntity extends \EvilLib\Entity\AbstractEntity implements \EvilLib\Entity\UserEntityInterface
 {
 
     /**
@@ -75,7 +74,7 @@ class UserEntity extends \EvilLib\Entity\AbstractEntity implements \EvilLib\Enti
 
     /**
      * @var \Doctrine\Common\Collection\ArrayCollection
-     * @\Doctrine\ORM\Mapping\ManyToMany(targetEntity="\EvilLib\Entity\RoleEntity", inversedBy="roleUsers")
+     * @\Doctrine\ORM\Mapping\ManyToMany(targetEntity="\EvilLib\Entity\AbstractRoleEntity", inversedBy="roleUsers")
      * @\Doctrine\ORM\Mapping\JoinTable(name="users_roles",
      *      joinColumns={@\Doctrine\ORM\Mapping\JoinColumn(name="user_id", referencedColumnName="user_id")},
      *      inverseJoinColumns={@\Doctrine\ORM\Mapping\JoinColumn(name="role_id", referencedColumnName="role_id")}

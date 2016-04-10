@@ -3,7 +3,7 @@
 namespace EvilLib;
 
 return array(
-    'identity_provider' => '\EvilLib\Service\UserService',
+    'identity_provider' => 'UserService',
     'role_providers' => array(
         'BjyAuthorize\Provider\Role\Config' => array(
             'guest' => array(),
@@ -22,6 +22,9 @@ return array(
             array('route' => 'Home/SignUp', 'roles' => array('guest')),
             array('route' => 'Home/SignUp/Ok', 'roles' => array('guest')),
             array('route' => 'Home/SignUp/Validate', 'roles' => array('guest')),
+            array('route' => 'Home/LostPassword', 'roles' => array('guest')),
+            array('route' => 'Home/RenewPassword', 'roles' => array('guest')),
+            array('route' => 'Home/RenewPasswordOk', 'roles' => array('guest')),
             array('route' => 'Home/EditUser', 'roles' => array('user')),
             // Console
             array('route' => 'CreateDatabaseSchema', 'roles' => array('guest')),
