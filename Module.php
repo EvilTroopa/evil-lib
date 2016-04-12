@@ -26,8 +26,12 @@ class Module
         }
 
         $oTranslator = $oServiceLocator->get('MvcTranslator');
-        $oTranslator->setLocale(\Locale::acceptFromHttp($oEvent->getRequest()->getServer('HTTP_ACCEPT_LANGUAGE')))
+        $oTranslator->setLocale(\Locale::getDefault())
                 ->setFallbackLocale($aConfig['translator']['fallback_locale']);
+
+        if ($oEvent->getRequest() instanceof HttpRequest) {
+            $oTranslator->setLocale(\Locale::acceptFromHttp($oEvent->getRequest()->getServer('HTTP_ACCEPT_LANGUAGE')));
+        }
     }
 
     public function getConfig()

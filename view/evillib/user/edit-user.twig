@@ -1,0 +1,13 @@
+{% extends 'layout/layout' %}
+
+{% block content %}
+    <h2>{{ translate('title_edit_user') }}</h2>
+    {% do renewPasswordForm.prepare() %}
+    {{ form().openTag(renewPasswordForm)|raw }}
+    {{ formRow(renewPasswordForm.get('csrf')) }}
+    {{ formRow(renewPasswordForm.get('userName')) }}
+    {{ formRow(renewPasswordForm.get('userPassword')) }}
+    {{ formRow(renewPasswordForm.get('userPasswordConfirm')) }}
+    {{ formRow(renewPasswordForm.get('buttonSubmit')) }}
+    {{ form().closeTag(renewPasswordForm)|raw }}
+{% endblock content %}

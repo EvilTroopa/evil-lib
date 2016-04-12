@@ -32,6 +32,6 @@ class ControllerAbstractFactory implements \Zend\ServiceManager\AbstractFactoryI
     public function createServiceWithName(\Zend\ServiceManager\ServiceLocatorInterface $oServiceLocator, $sName, $sRequestedName)
     {
         $oController = new $sRequestedName();
-        return $oController->setServiceManager($oServiceLocator);
+        return $oController->setServiceLocator($oServiceLocator);
     }
 }

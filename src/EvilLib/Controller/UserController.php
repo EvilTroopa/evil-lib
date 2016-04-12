@@ -185,10 +185,106 @@ class UserController extends \EvilLib\Controller\AbstractController
         // Check post
         if ($this->getRequest()->isPost() && $oForm->setData($this->params()->fromPost())->isValid()) {
             $oUserService->processUserLostPassword($oForm->getData());
-            $oViewModel->message = 'If the provided email is linked to an account, an email has been sent to it to renew the password.';
+            $this->flashMessenger()->addInfoMessage('If the provided email is linked to an account, an email has been sent to it to renew the password.');
+            return $this->postRedirectGet('Home/LostPassword');
         }
 
         $oViewModel->lostPasswordForm = $oForm;
+
+        if ($this->flashMessenger()->hasCurrentInfoMessages()) {
+            $oViewModel->message = implode('<br />', $this->flashMessenger()->getCurrentInfoMessages());
+        }
+
+        return $oViewModel;
+    }
+
+    /**
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renewPasswordAction()
+    {
+        // Retrieve hash from route
+        $sPasswordHash = $this->params()->fromRoute('hash', '');
+
+        if (!$sPasswordHash) {
+            return $this->redirect()->toRoute('Home');
+        }
+        // Retrieve service locator
+        $oServiceLocator = $this->getServiceLocator();
+        $oUserService = $oServiceLocator->get('UserService');
+        $oUserEntity = $oUserService->findUserByPasswordHashKey($sPasswordHash);
+
+        if (!($oUserEntity instanceof \EvilLib\Entity\UserEntityInterface)) {
+            return $this->redirect()->toRoute('Home');
+        }
+
+        $oForm = new \EvilLib\Form\RenewPasswordForm();
+
+        // Check post
+        if ($this->getRequest()->isPost() && $oForm->setData($this->params()->fromPost())->isValid()) {
+            $aUserData = $oForm->getData();
+            $oUserService->updateUserPassword($oUserEntity, $aUserData['userPassword']);
+            $oServiceLocator->get('Session')->getStorage()->offsetSet('step', self::STEP_NEW_PWD_OK);
+            return $this->postRedirectGet('Home/RenewPasswordOk');
+        }
+
+        // Prepare view
+        $oViewModel = new \Zend\View\Model\ViewModel();
+        $oViewModel->setTemplate('evillib/user/renew-password');
+
+        $oViewModel->renewPasswordForm = $oForm;
+
+        return $oViewModel;
+    }
+
+    /**
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renewPasswordOkAction()
+    {
+        // Retrieve service locator
+        $oSession = $this->getServiceLocator()->get('Session');
+
+        if ($oSession->getStorage()->offsetGet('step') !== self::STEP_NEW_PWD_OK) {
+            return $this->redirect('Home');
+        }
+
+        $oSession->getStorage()->offsetUnset('step');
+
+        // Prepare view
+        $oViewModel = new \Zend\View\Model\ViewModel();
+        $oViewModel->setTemplate('evillib/user/renew-password-ok');
+
+        return $oViewModel;
+    }
+
+    /**
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function editUserAction()
+    {
+        // Retrieve service locator
+        $oServiceLocator = $this->getServiceLocator();
+        $oUserService = $oServiceLocator->get('UserService');
+
+        $oUserEntity = $this->identity();
+        $sOldPassword = $oUserEntity->getUserPassword();
+
+        $oForm = $oServiceLocator->get('EditUserForm');
+        $oForm->bind($oUserEntity);
+
+        // Check post
+        if ($this->getRequest()->isPost() && $oForm->setData($this->params()->fromPost())->isValid()) {
+            $oUserService->updateUser($oUserEntity, $sOldPassword);
+
+            return $this->postRedirectGet('Home/EditUser');
+        }
+
+        // Prepare view
+        $oViewModel = new \Zend\View\Model\ViewModel();
+        $oViewModel->setTemplate('evillib/user/edit-user');
+
+        $oViewModel->renewPasswordForm = $oForm;
 
         return $oViewModel;
     }

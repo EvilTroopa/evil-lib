@@ -13,23 +13,23 @@ class AbstractController extends \Zend\Mvc\Controller\AbstractActionController
     /**
      * @var \Zend\ServiceManager\ServiceLocatorInterface
      */
-    protected $serviceManager;
+    protected $serviceLocator;
 
     /**
      * @return \Zend\ServiceManager\ServiceLocatorInterface
      */
-    public function getServiceManager()
+    public function getServiceLocator()
     {
-        return $this->serviceManager;
+        return $this->serviceLocator;
     }
 
     /**
-     * @param \Zend\ServiceManager\ServiceLocatorInterface $oServiceManager
+     * @param \Zend\ServiceManager\ServiceLocatorInterface $oServiceLocator
      * @return \EvilLib\Controller\AbstractController
      */
-    public function setServiceManager(\Zend\ServiceManager\ServiceLocatorInterface $oServiceManager)
+    public function setServiceLocator(\Zend\ServiceManager\ServiceLocatorInterface $oServiceLocator)
     {
-        $this->serviceManager = $oServiceManager;
+        $this->serviceLocator = $oServiceLocator;
         return $this;
     }
 }

@@ -16,6 +16,9 @@ return array(
         'evillib/user/sign-up-validate' => __DIR__ . '/../view/evillib/user/sign-up-validate.twig',
         'evillib/user/log-in' => __DIR__ . '/../view/evillib/user/log-in.twig',
         'evillib/user/lost-password' => __DIR__ . '/../view/evillib/user/lost-password.twig',
+        'evillib/user/renew-password' => __DIR__ . '/../view/evillib/user/renew-password.twig',
+        'evillib/user/renew-password-ok' => __DIR__ . '/../view/evillib/user/renew-password-ok.twig',
+        'evillib/user/edit-user' => __DIR__ . '/../view/evillib/user/edit-user.twig',
         // Emails
         'evillib/mail/sign-up-validate' => __DIR__ . '/../view/evillib/mail/sign-up-validate.twig',
         'evillib/mail/renew-password' => __DIR__ . '/../view/evillib/mail/renew-password.twig',

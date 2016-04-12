@@ -76,7 +76,7 @@ class UserService extends \EvilLib\Service\AbstractService implements \BjyAuthor
         $sRoleEntityClassName = $this->getRoleEntityClassName();
         $oRoleEntity = $oServiceLocator->get('\Doctrine\ORM\EntityManager')->getRepository($sRoleEntityClassName)->find(1);
         $oUserEntity->getUserRoles()->add($oRoleEntity);
-//        Persist user entity
+        // Persist user entity
         $oUserRepository->createEntity($oUserEntity);
         // Send sign-up mail
         $this->sendSignUpValidateEmail($oUserEntity);
@@ -316,6 +316,86 @@ class UserService extends \EvilLib\Service\AbstractService implements \BjyAuthor
             'to' => $oUserEntity->getUserEmail(),
             'subject' => 'My website - Renew password',
         ));
+
+        return $this;
+    }
+
+    /**
+     * @param string $sUserPasswordHashKey
+     * @return \EvilLib\Entity\UserEntityInterface|null
+     * @throws \InvalidArgumentException
+     */
+    public function findUserByPasswordHashKey($sUserPasswordHashKey)
+    {
+        // Check arguments
+        if (!is_string($sUserPasswordHashKey)) {
+            throw new \InvalidArgumentException('Argument $sUserPasswordHashKey expects a string value, "' . gettype($sUserPasswordHashKey) . '" given');
+        }
+
+        // Retrieve user from hash key
+        $oUserRepository = $this->getServiceLocator()->get('\Doctrine\ORM\EntityManager')->getRepository($this->getUserEntityClassName());
+        return $oUserRepository->findOneBy(array('userPasswordHashKey' => $sUserPasswordHashKey, 'userStatus' => \EvilLib\Entity\AbstractUserEntity::USER_STATUS_ACTIVE));
+    }
+
+    /**
+     * @param \EvilLib\Entity\UserEntityInterface $oUserEntity
+     * @param string $sUserPassword
+     * @return \EvilLib\Service\UserService
+     * @throws \InvalidArgumentException
+     * @throws \LogicException
+     */
+    public function updateUserPassword(\EvilLib\Entity\UserEntityInterface $oUserEntity, $sUserPassword)
+    {
+        // Check arguments
+        if (!is_string($sUserPassword)) {
+            throw new \InvalidArgumentException('Argument $aUserData expects a string value, "' . gettype($sUserPassword) . '"');
+        }
+
+        // Retrieve Service locator and User Repository
+        $oServiceLocator = $this->getServiceLocator();
+        $oUserRepository = $oServiceLocator->get('\Doctrine\ORM\EntityManager')->getRepository(get_class($oUserEntity));
+
+        if (!($oUserRepository instanceof \EvilLib\Repository\AbstractEntityRepository)) {
+            throw new \LogicException('User Repository expects an instance of \EvilLib\Repository\AbstractEntityRepository');
+        }
+
+        // Update user entity date
+        $oUserEntity->setUserPasswordHashKey(null)
+                ->setUserPassword($oServiceLocator->get('Encryptor')->hash($sUserPassword));
+
+        // Persist user entity
+        $oUserRepository->updateEntity($oUserEntity);
+
+        return $this;
+    }
+
+    /**
+     *
+     * @param \EvilLib\Entity\UserEntityInterface $oUserEntity
+     * @param string $sOldPassword
+     * @return \EvilLib\Service\UserService
+     * @throws \LogicException
+     */
+    public function updateUser(\EvilLib\Entity\UserEntityInterface $oUserEntity)
+    {
+        // Retrieve Service locator and User Repository
+        $oServiceLocator = $this->getServiceLocator();
+        $oUserRepository = $oServiceLocator->get('\Doctrine\ORM\EntityManager')->getRepository(get_class($oUserEntity));
+
+        if (!($oUserRepository instanceof \EvilLib\Repository\AbstractEntityRepository)) {
+            throw new \LogicException('User Repository expects an instance of \EvilLib\Repository\AbstractEntityRepository');
+        }
+
+        $oBaseEntity = $oUserRepository->find($oUserEntity->getUserId());
+
+        if ($oUserEntity->getUserPassword()) {
+            $oUserEntity->setUserPassword($oServiceLocator->get('Encryptor')->hash($oUserEntity->getUserPassword()));
+        } else {
+            $oUserEntity->setUserPassword($oBaseEntity->getUserPassword());
+        }
+
+        // Persist user entity
+        $oUserRepository->updateEntity($oUserEntity);
 
         return $this;
     }

@@ -22,6 +22,7 @@ return array(
         // Forms
         'SignUpForm' => '\EvilLib\Factory\Form\SignUpFormFactory',
         'LostPasswordForm' => '\EvilLib\Factory\Form\LostPasswordFormFactory',
+        'EditUserForm' => '\EvilLib\Factory\Form\EditUserFormFactory',
     ),
     'invokables' => array(
         'UserService' => '\EvilLib\Service\UserService',

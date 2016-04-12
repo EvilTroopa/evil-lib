@@ -62,15 +62,15 @@ abstract class AbstractUserEntity extends \EvilLib\Entity\AbstractEntity impleme
 
     /**
      * @var string
-     * @\Doctrine\ORM\Mapping\Column(type="string", name="user_sign_up_hash_key", length=255)
+     * @\Doctrine\ORM\Mapping\Column(type="string", name="user_sign_up_hash_key", length=255, nullable=true)
      */
-    protected $userSignUpHashKey;
+    protected $userSignUpHashKey = null;
 
     /**
      * @var string
      * @\Doctrine\ORM\Mapping\Column(type="string", name="user_password_hash_key", length=255, nullable=true)
      */
-    protected $userPasswordHashKey;
+    protected $userPasswordHashKey = null;
 
     /**
      * @var \Doctrine\Common\Collection\ArrayCollection
@@ -230,26 +230,26 @@ abstract class AbstractUserEntity extends \EvilLib\Entity\AbstractEntity impleme
      */
     public function getUserSignUpHashKey()
     {
-        if (is_string($this->userSignUpHashKey)) {
+        if ($this->userSignUpHashKey === null || is_string($this->userSignUpHashKey)) {
             return $this->userSignUpHashKey;
         }
 
-        throw new \LogicException('Property userSignUpHashKey expects a string value, "' . gettype($this->userSignUpHashKey) . '" defined');
+        throw new \LogicException('Property userSignUpHashKey expects a string or null value, "' . gettype($this->userSignUpHashKey) . '" defined');
     }
 
     /**
-     * @param string $sUserSignUpHashKey
+     * @param string|null $sUserSignUpHashKey
      * @return \EvilLib\Entity\UserEntity
      * @throws \LogicException
      */
     public function setUserSignUpHashKey($sUserSignUpHashKey)
     {
-        if (is_string($sUserSignUpHashKey)) {
+        if ($sUserSignUpHashKey === null || is_string($sUserSignUpHashKey)) {
             $this->userSignUpHashKey = $sUserSignUpHashKey;
             return $this;
         }
 
-        throw new \LogicException('Argument $sUserSignUpHashKey expects a string value, "' . gettype($sUserSignUpHashKey) . '" given');
+        throw new \LogicException('Argument $sUserSignUpHashKey expects a string or null value, "' . gettype($sUserSignUpHashKey) . '" given');
     }
 
     /**
@@ -258,11 +258,11 @@ abstract class AbstractUserEntity extends \EvilLib\Entity\AbstractEntity impleme
      */
     public function getUserPasswordHashKey()
     {
-        if (is_string($this->userPasswordHashKey)) {
+        if ($this->userPasswordHashKey === null || is_string($this->userPasswordHashKey)) {
             return $this->userPasswordHashKey;
         }
 
-        throw new \LogicException('Property userPasswordHashKey expects a string value, "' . gettype($this->userPasswordHashKey) . '" defined');
+        throw new \LogicException('Property userPasswordHashKey expects a string or null value, "' . gettype($this->userPasswordHashKey) . '" defined');
     }
 
     /**
@@ -272,11 +272,11 @@ abstract class AbstractUserEntity extends \EvilLib\Entity\AbstractEntity impleme
      */
     public function setUserPasswordHashKey($sUserPasswordHashKey)
     {
-        if (is_string($sUserPasswordHashKey)) {
+        if ($sUserPasswordHashKey === null || is_string($sUserPasswordHashKey)) {
             $this->userPasswordHashKey = $sUserPasswordHashKey;
             return $this;
         }
 
-        throw new \LogicException('Argument $sUserPasswordHashKey expects a string value, "' . gettype($sUserPasswordHashKey) . '" given');
+        throw new \LogicException('Argument $sUserPasswordHashKey expects a string or null value, "' . gettype($sUserPasswordHashKey) . '" given');
     }
 }
